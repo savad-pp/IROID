@@ -4,6 +4,9 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var mongoose = require('mongoose');
+require('dotenv').config();
+require('./services/db.service')
+const port = process.env.PORT;
 
 app.use(express.static(__dirname));
 app.use(bodyParser.json());
@@ -11,10 +14,9 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 var Message = mongoose.model('Message',{
   name : String,
-  message : String
+  message : String,
+  email:String
 })
-
-var url = 'mongodb+srv://user:RCYjMY5yzEYryLAn@jsmonk-gftte.mongodb.net/iroid_project_test?retryWrites=true&w=majority'
 
 app.get('/messages', (req, res) => {
   Message.find({},(err, messages)=> {
@@ -47,13 +49,8 @@ io.on('connection', () =>{
   console.log('a user is connected')
 })
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }).then(res=>{
-  console.log('db connected')
-}).catch(err=>{
-  console.log('connection error')
-  console.log(err)
-});
 
-var server = http.listen(3000, () => {
+
+var server = http.listen(port, () => {
   console.log('server is running on port', server.address().port);
 });
